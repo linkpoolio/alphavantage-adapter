@@ -8,7 +8,7 @@ import (
 
 func TestGetSupportedExchanges(t *testing.T) {
 	c := NewClient(os.Getenv("API_KEY"))
-	r, err := c.HttpGet(map[string]string {
+	r, err := c.Query(map[string]string {
 		"function": "TIME_SERIES_MONTHLY_ADJUSTED",
 		"symbol": "MSFT",
 	})

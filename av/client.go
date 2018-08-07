@@ -21,7 +21,7 @@ func NewClient(apiKey string) *Client {
 	return c
 }
 
-func (c *Client) HttpGet(params map[string]string) (map[string]*json.RawMessage, error) {
+func (c *Client) Query(params map[string]string) (map[string]*json.RawMessage, error) {
 	var om map[string]*json.RawMessage
 	hc := &http.Client{}
 	req, err := http.NewRequest("GET", fmt.Sprintf("%s%s", c.BaseURL, c.Endpoint), nil)

@@ -55,7 +55,7 @@ func GetResponse(w rest.ResponseWriter, r *rest.Request) {
 		return
 	}
 
-	cr, err := client.HttpGet(i.Data)
+	cr, err := client.Query(i.Data)
 	if err != nil {
 		writeError(w, i, err)
 		return
