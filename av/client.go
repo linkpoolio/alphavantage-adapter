@@ -5,7 +5,12 @@ import (
 	"fmt"
 	"io/ioutil"
 	"encoding/json"
+	"strings"
 )
+
+type Error struct {
+	Message string `json:"Error Message"`
+}
 
 type Client struct {
 	APIKey   string
@@ -46,6 +51,13 @@ func (c *Client) Query(params map[string]string) (map[string]*json.RawMessage, e
 	err = json.Unmarshal(bodyBytes, &om)
 	if err != nil {
 		return nil, err
+	}
+	if om["Error Message"] != nil {
+		b, err := om["Error Message"].MarshalJSON()
+		if err != nil {
+			return nil, err
+		}
+		return nil, fmt.Errorf(strings.Replace(string(b), "\"", "", -1))
 	}
 	return om, err
 }

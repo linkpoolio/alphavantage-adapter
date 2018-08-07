@@ -19,7 +19,7 @@ type Output struct {
 }
 
 type RunResult struct {
-	JobRunID     string       `json:"jobRunId"`
+	JobRunID     string      `json:"jobRunId"`
 	Status       string      `json:"status"`
 	ErrorMessage null.String `json:"error"`
 	Pending      bool        `json:"pending"`
@@ -69,7 +69,7 @@ func GetResponse(w rest.ResponseWriter, r *rest.Request) {
 }
 
 func writeError(w rest.ResponseWriter, i Input, err error) {
-	i.ErrorMessage = null.StringFrom(err.Error())
+	i.ErrorMessage = null.NewString(err.Error(), true)
 	i.Pending = false
 	w.WriteJson(i)
 }
