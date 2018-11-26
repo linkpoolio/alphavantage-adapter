@@ -11,7 +11,7 @@ import (
 
 type Input struct {
 	RunResult
-	Data map[string]string `json:"data"`
+	Data map[string]interface{} `json:"data"`
 }
 type Output struct {
 	RunResult
@@ -51,12 +51,14 @@ func GetResponse(w rest.ResponseWriter, r *rest.Request) {
 	var i Input
 	err := json.Unmarshal(bytes, &i)
 	if err != nil {
+		log.WithField("error", err).Error("request error")
 		writeError(w, i, err)
 		return
 	}
 
 	cr, err := client.Query(i.Data)
 	if err != nil {
+		log.WithField("error", err).Error("request error")
 		writeError(w, i, err)
 		return
 	}
@@ -66,6 +68,7 @@ func GetResponse(w rest.ResponseWriter, r *rest.Request) {
 	o.Data = cr
 
 	w.WriteJson(o)
+	log.WithFields(log.Fields{"param": i.Data}).Info("completed request")
 }
 
 func writeError(w rest.ResponseWriter, i Input, err error) {

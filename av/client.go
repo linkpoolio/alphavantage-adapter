@@ -26,7 +26,7 @@ func NewClient(apiKey string) *Client {
 	return c
 }
 
-func (c *Client) Query(params map[string]string) (map[string]*json.RawMessage, error) {
+func (c *Client) Query(params map[string]interface{}) (map[string]*json.RawMessage, error) {
 	var om map[string]*json.RawMessage
 	hc := &http.Client{}
 	req, err := http.NewRequest("GET", fmt.Sprintf("%s%s", c.BaseURL, c.Endpoint), nil)
@@ -36,7 +36,7 @@ func (c *Client) Query(params map[string]string) (map[string]*json.RawMessage, e
 	q := req.URL.Query()
 	q.Add("apikey", c.APIKey)
 	for k, v := range params {
-		q.Add(k, v)
+		q.Add(k, fmt.Sprint(v))
 	}
 	req.URL.RawQuery = q.Encode()
 
