@@ -8,11 +8,6 @@ https://www.alphavantage.co/documentation/
 To give Alpha Vantages own description:
 > Composed of a tight-knit community of researchers, engineers, and business professionals, Alpha Vantage Inc. is a leading provider of free APIs for realtime and historical data on stocks, forex (FX), and digital/crypto currencies. Our success is driven by rigorous research, cutting edge technology, and a disciplined focus on democratizing access to data.
 
-### Preconditions
-Retrieve an API key from Alpha Vantage for free:
-
-https://www.alphavantage.co/support/#api-key
-
 ### Contract Usage
 To use this adapter on-chain, find a node that supports this adapter and build your request like so:
 ```
