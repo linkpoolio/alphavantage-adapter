@@ -1,5 +1,5 @@
-# Alpha Vantage External Adaptor ![Travis-CI](https://travis-ci.org/linkpoolio/alpha-vantage-cl-ea.svg?branch=master) [![codecov](https://codecov.io/gh/linkpoolio/alpha-vantage-cl-ea/branch/master/graph/badge.svg)](https://codecov.io/gh/linkpoolio/alpha-vantage-cl-ea)
-External Adaptor for Chainlink to allow access to Alpha Vantages' APIs.
+# Alpha Vantage External Adapter ![Travis-CI](https://travis-ci.org/linkpoolio/alpha-vantage-cl-ea.svg?branch=master) [![codecov](https://codecov.io/gh/linkpoolio/alpha-vantage-cl-ea/branch/master/graph/badge.svg)](https://codecov.io/gh/linkpoolio/alpha-vantage-cl-ea)
+External Adapter for Chainlink to allow access to Alpha Vantages' APIs.
 
 To give Alpha Vantages own description:
 > Composed of a tight-knit community of researchers, engineers, and business professionals, Alpha Vantage Inc. is a leading provider of free APIs for realtime and historical data on stocks, forex (FX), and digital/crypto currencies. Our success is driven by rigorous research, cutting edge technology, and a disciplined focus on democratizing access to data.
@@ -18,17 +18,10 @@ Build:
 make build
 ```
 
-Then run the adaptor:
+Then run the adapter:
 ```
 ./alpha-vantage-cl-ea -p <port> -apiKey <API_KEY>
 ```
-
-##### Arguments
-
-| Char   | Default  | Usage |
-| ------ |:--------:| ----- |
-| p      | 8080     | Port number to serve |
-| apiKey      | nil     | Your API Key for Alpha Vantage |
 
 #### Docker
 To run the container:
@@ -71,7 +64,7 @@ Should return something similar to:
 
 ### ChainLink Node Setup
 
-To integrate this adaptor with your node, use the following commands:
+To integrate this adapter with your node, use the following commands:
 
 **Add Bridge Type**
 ```
@@ -85,13 +78,13 @@ curl -X POST -H 'Content-Type: application/json' -d '{"initiators":[{"type":"web
 
 **New Spec Run**
 
-Notice the parameters `function` and `symbol`. These are passed into the external adaptor by the node, they map up to the GET parameters on the documentation.
+Notice the parameters `function` and `symbol`. These are passed into the external adapter by the node, they map up to the GET parameters on the documentation.
 ```
 curl -X POST -H 'Content-Type: application/json' -d '{"function": "TIME_SERIES_MONTHLY_ADJUSTED", "symbol": "MSFT"}' http://localhost:6688/v2/specs/<specId>/runs
 ```
 
 ### Contract Usage
-To use this adaptor within a Solidity contract, add the following keys to your ChainLink run:
+To use this adapter within a Solidity contract, add the following keys to your ChainLink run:
 ```
 ChainlinkLib.Run memory run = newRun(specId, this, "fulfill(bytes32,bytes32)");
 run.add("function", "TIME_SERIES_MONTHLY_ADJUSTED");

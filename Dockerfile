@@ -1,16 +1,23 @@
-FROM golang:1.10-alpine as builder
+FROM golang:1.12-alpine as builder
+
+ENV GO111MODULE=on
 
 RUN apk add --no-cache make curl git gcc musl-dev linux-headers
-RUN curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
 
-ADD . /go/src/github.com/linkpoolio/alpha-vantage-cl-ea
-RUN cd /go/src/github.com/linkpoolio/alpha-vantage-cl-ea && make build
+WORKDIR /go/src/github.com/linkpoolio/alphavantage-adapter
+ADD go.mod go.mod
+ADD go.sum go.sum
+ADD Makefile Makefile
+RUN make install
 
-# Copy Adaptor into a second stage container
+ADD . .
+RUN make build
+
+# Copy adapter into a second stage container
 FROM alpine:latest
 
 RUN apk add --no-cache ca-certificates
-COPY --from=builder /go/src/github.com/linkpoolio/alpha-vantage-cl-ea/alpha-vantage-cl-ea /usr/local/bin/
+COPY --from=builder /go/src/github.com/linkpoolio/alphavantage-adapter/alphavantage-adapter /usr/local/bin/
 
 EXPOSE 8080
-ENTRYPOINT ["alpha-vantage-cl-ea"]
+ENTRYPOINT ["alphavantage-adapter"]

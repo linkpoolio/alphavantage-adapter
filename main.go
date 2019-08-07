@@ -1,16 +1,33 @@
 package main
 
 import (
-	"fmt"
-	log "github.com/sirupsen/logrus"
+	"github.com/linkpoolio/bridges/bridge"
 	"net/http"
-	"github.com/linkpoolio/alpha-vantage-cl-ea/web"
+	"os"
 )
 
-func main() {
-	web.InitialiseConfig()
+type AlphaVantage struct {}
 
-	log.Print("chainlink alpha vantage adaptor")
-	log.Printf("starting to serve on port %d", web.Conf.Port)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", web.Conf.Port), web.Api().MakeHandler()))
+func (av *AlphaVantage) Run(h *bridge.Helper) (interface{}, error) {
+	r := make(map[string]interface{})
+	return r, h.HTTPCallWithOpts(
+		http.MethodGet,
+		"https://www.alphavantage.co/query",
+		&r,
+		bridge.CallOpts{
+			Auth: bridge.NewAuth(bridge.AuthParam, "apikey", os.Getenv("API_KEY")),
+			QueryPassthrough: true,
+		},
+	)
+}
+
+func (av *AlphaVantage) Opts() *bridge.Opts {
+	return &bridge.Opts{
+		Name:   "AlphaVantage",
+		Lambda: true,
+	}
+}
+
+func main() {
+	bridge.NewServer(&AlphaVantage{}).Start(8080)
 }

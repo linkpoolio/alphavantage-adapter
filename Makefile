@@ -1,16 +1,13 @@
 .DEFAULT_GOAL := build
-.PHONY: dep build install docker dockerpush
+.PHONY: build install docker dockerpush
 
-REPO=linkpoolio/asset-price-cl-ea
-LDFLAGS=-ldflags "-X github.com/linkpoolio/alpha-vantage-cl-ea/store.Sha=`git rev-parse HEAD`"
+REPO=linkpoolio/alphavantage-adapter
+LDFLAGS=-ldflags "-X github.com/linkpoolio/alphavantage-adapter/store.Sha=`git rev-parse HEAD`"
 
-dep:
-	@dep ensure
+build:
+	@go build $(LDFLAGS) -o alphavantage-adapter
 
-build: dep
-	@go build $(LDFLAGS) -o alpha-vantage-cl-ea
-
-install: dep
+install:
 	@go install $(LDFLAGS)
 
 docker:
