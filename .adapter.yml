@@ -1,0 +1,29 @@
+name: Alpha Vantage
+description: Adapter that connects Chainlink nodes to the Alpha Vantage API
+node_identifier: alphavantage
+platforms:
+  - Docker
+  - AWS Lambda
+  - GCP Functions
+data_sources:
+  - name: Alpha Vantage
+    url: https://www.alphavantage.co/
+parameters:
+  - function
+  - symbol
+  - interval
+  - outputsize
+  - keywords
+  - from_currency
+  - to_currency
+  - from_symbol
+  - to_symbol
+  - market
+  - time_period
+  - series_type
+  - fastperiod
+  - slowperiod
+  - signalperiod
+  - fastmatype
+  - slowmatype
+  - signalmatype
