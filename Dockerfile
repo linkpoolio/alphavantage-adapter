@@ -5,11 +5,6 @@ ENV GO111MODULE=on
 RUN apk add --no-cache make curl git gcc musl-dev linux-headers
 
 WORKDIR /go/src/github.com/linkpoolio/alphavantage-adapter
-ADD go.mod go.mod
-ADD go.sum go.sum
-ADD Makefile Makefile
-RUN make install
-
 ADD . .
 RUN make build
 

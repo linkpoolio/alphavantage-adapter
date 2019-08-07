@@ -1,5 +1,9 @@
-# Alpha Vantage External Adapter ![Travis-CI](https://travis-ci.org/linkpoolio/alpha-vantage-cl-ea.svg?branch=master) [![codecov](https://codecov.io/gh/linkpoolio/alpha-vantage-cl-ea/branch/master/graph/badge.svg)](https://codecov.io/gh/linkpoolio/alpha-vantage-cl-ea)
-External Adapter for Chainlink to allow access to Alpha Vantages' APIs.
+# Alpha Vantage External Adapter 
+External Adapter for Chainlink to query Alpha Vantages' APIs.
+
+Built with [Bridges](https://github.com/linkpoolio/bridges).
+
+https://www.alphavantage.co/documentation/
 
 To give Alpha Vantages own description:
 > Composed of a tight-knit community of researchers, engineers, and business professionals, Alpha Vantage Inc. is a leading provider of free APIs for realtime and historical data on stocks, forex (FX), and digital/crypto currencies. Our success is driven by rigorous research, cutting edge technology, and a disciplined focus on democratizing access to data.
@@ -8,6 +12,17 @@ To give Alpha Vantages own description:
 Retrieve an API key from Alpha Vantage for free:
 
 https://www.alphavantage.co/support/#api-key
+
+### Contract Usage
+To use this adapter on-chain, find a node that supports this adapter and build your request like so:
+```
+Chainlink.Request memory req = buildChainlinkRequest(jobId, this, this.fulfill.selector);
+run.add("function", "GLOBAL_QUOTE");
+run.add("symbol", "MSFT");
+string[] memory copyPath = new string[](2);
+copyPath[0] = "Global Quote";
+copyPath[1] = "05. price";
+```
 
 ### Setup Instructions
 #### Local Install
@@ -20,75 +35,55 @@ make build
 
 Then run the adapter:
 ```
-./alpha-vantage-cl-ea -p <port> -apiKey <API_KEY>
+API_KEY=apikey ./alphavantage-adapter
 ```
 
 #### Docker
 To run the container:
 ```
-docker run -it -p 8080:8080 linkpoolio/alpha-vantage-cl-ea -apiKey=yourkey
+docker run -it -e API_KEY=apikey -p 8080:8080 linkpool/alphavantage-adapter
 ```
 
 Container also supports passing in CLI arguments.
 
+You can add and modify the keys to match what's specified in the API documentation.
+
 ### Usage
 
-To call the API, you need to send a POST request to `http://localhost:<port>/query` with the request body being of the ChainLink `RunResult` type.
-
-The `data` passed in should match the GET parameter options on Alpha Vantage's API docs:
-
-https://www.alphavantage.co/documentation/
-
-For example:
 ```
-curl -X POST -H 'Content-Type: application/json' -d '{ "jobRunId": "1234", "data": {"function": "TIME_SERIES_MONTHLY_ADJUSTED", "symbol": "MSFT"}}' http://localhost:8080/query
+curl -X POST -H 'Content-Type: application/json' \
+-d @- << EOF
+{
+	"jobRunId": "1234",
+	"data": {
+		"function": "GLOBAL_QUOTE",
+		"symbol": "MSFT"
+	}
+}
+EOF
 ```
-Should return something similar to:
+Response:
 ```json
 {
     "jobRunId": "1234",
-    "status": "",
+    "status": "completed",
     "error": null,
     "pending": false,
     "data": {
-        "Meta Data": {
-            "1. Information": "Monthly Adjusted Prices and Volumes",
-            "2. Symbol": "MSFT",
-            "3. Last Refreshed": "2018-08-07 11:15:38",
-            "4. Time Zone": "US/Eastern"
+        "Global Quote": {
+            "01. symbol": "MSFT",
+            "02. open": "133.7900",
+            "03. high": "135.6500",
+            "04. low": "131.8284",
+            "05. price": "135.2800",
+            "06. volume": "26682074",
+            "07. latest trading day": "2019-08-07",
+            "08. previous close": "134.6900",
+            "09. change": "0.5900",
+            "10. change percent": "0.4380%"
         },
-        ....
+        "function": "GLOBAL_QUOTE",
+        "symbol": "MSFT"
     }
 }
 ```
-
-### ChainLink Node Setup
-
-To integrate this adapter with your node, use the following commands:
-
-**Add Bridge Type**
-```
-curl -X POST -H 'Content-Type: application/json' -d '{"name":"alphavantage","url":"http://localhost:8080/query"}' http://localhost:6688/v2/bridge_types
-```
-
-**Create Spec**
-```
-curl -X POST -H 'Content-Type: application/json' -d '{"initiators":[{"type":"web"}],"tasks":[{"type":"alphavantage"},{"type":"noop"}]}' http://localhost:6688/v2/specs
-```
-
-**New Spec Run**
-
-Notice the parameters `function` and `symbol`. These are passed into the external adapter by the node, they map up to the GET parameters on the documentation.
-```
-curl -X POST -H 'Content-Type: application/json' -d '{"function": "TIME_SERIES_MONTHLY_ADJUSTED", "symbol": "MSFT"}' http://localhost:6688/v2/specs/<specId>/runs
-```
-
-### Contract Usage
-To use this adapter within a Solidity contract, add the following keys to your ChainLink run:
-```
-ChainlinkLib.Run memory run = newRun(specId, this, "fulfill(bytes32,bytes32)");
-run.add("function", "TIME_SERIES_MONTHLY_ADJUSTED");
-run.add("symbol", "MSFT");
-```
-
-You can add and modify the keys to match what's specified in the API documentation.
